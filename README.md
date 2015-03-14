@@ -17,7 +17,7 @@
 ===============
 It is simple, easy, and fast CLI tool to download manga's and save them in a directory and as well as save them as an ebook in pdf format. 
 
-*Requires **Python 2.7** to run.* Manga's are scraped from [MangaPanda](http://www.mangapanda.com/). Whole or complete Manga can be downloaded, or a single chapter or can be downloaded in a range. All these customizations are provided by this tool.
+*Requires __Python 2.7__ to run.* Manga's are scraped from [MangaPanda](http://www.mangapanda.com/). Whole or complete Manga can be downloaded, or a single chapter or can be downloaded in a range. All these customizations are provided by this tool.
 
 # Help & Usage
 ==============
