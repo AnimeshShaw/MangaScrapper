@@ -11,6 +11,7 @@ import requests
 import requests.adapters
 import requests.exceptions
 
+__author__ = 'Psycho_Coder'
 
 title = """
   __  __
