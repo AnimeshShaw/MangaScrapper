@@ -154,13 +154,13 @@ class MangaScrapper():
             print(end_message)
 
     def store_response_data(self, pageurl):
-        resp = ""
         try:
             s = requests.Session()
             a = requests.adapters.HTTPAdapter(max_retries = 5)
             s.mount('http://', a)
             resp = s.get(pageurl, timeout = 30)
             self.resp_data = resp.content
+            resp.close()
         except requests.exceptions.Timeout:
             print("Very Slow Internet Connection.")
             logging.error("Very Slow Internet Connection.")
@@ -169,8 +169,6 @@ class MangaScrapper():
             logging.error("Network Unavailable. Check your connection.")
         except requests.exceptions.MissingSchema:
             logging.error("Problem with connection. Retrying ... ")
-            self.store_response_data(pageurl)
-        resp.close()
 
     def _get_chapter_pagecount_(self, chapurl):
         """
