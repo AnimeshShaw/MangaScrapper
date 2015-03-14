@@ -13,13 +13,15 @@
 						  By : Psycho_Coder
 			  rC Developers @ rawCoders.com
 
-## MangaScrapper is simple, easy, and fast CLI tool to download manga's and save them in a directory and as well as save them as an ebook in pdf format. 
+# MangaScrapper 
+===============
+It is simple, easy, and fast CLI tool to download manga's and save them in a directory and as well as save them as an ebook in pdf format. 
 
 *Requires **Python 2.7** to run*
 
-### Manga's are scraped from [MangaPanda](http://www.mangapanda.com/).
+#### Manga's are scraped from [MangaPanda](http://www.mangapanda.com/).
 
-### Whole or complete Manga can be downloaded, or a single chapter or can be downloaded in a range. All these customizations are provided by this tool.
+#### Whole or complete Manga can be downloaded, or a single chapter or can be downloaded in a range. All these customizations are provided by this tool.
 
 # Help & Usage
 ==============
@@ -48,7 +50,7 @@
 # Example Usage
 ===============
 
-### To download complete Manga
+#### To download complete Manga
 
 	python mangascrapper.py <manga-name>
 	
@@ -58,7 +60,7 @@
 
 ---
 
-### To download a particular chapter of Manga
+#### To download a particular chapter of Manga
 
 	python mangascrapper.py -c <chapter-number> <manga-name>
 						or
@@ -70,7 +72,7 @@
 
 --- 
 
-### To download chapters of Manga in a range
+#### To download chapters of Manga in a range
 
 	python mangascrapper.py -b <beginning-chapter-number> -e <ending-chapter-number> <manga-name>
 						or
