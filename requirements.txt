@@ -1,0 +1,4 @@
+requests
+reportlab
+lxml
+argparse
