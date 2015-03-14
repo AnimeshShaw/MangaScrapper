@@ -206,7 +206,7 @@ class MangaScrapper():
             pagedata = html.fromstring(self.resp_data)
             return str(pagedata.xpath(self.Constants['img_xpath'])[0])
         except IndexError:
-            self._get_page_img_url_(url)
+            pass
 
 
 def check_negative(value):
