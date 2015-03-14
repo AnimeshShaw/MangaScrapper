@@ -49,19 +49,18 @@ class MangaScrapper():
         print("Building up indexes...")
 
         manga_url = "http://www.mangapanda.com/" + self.todashcase(manga_name) + "/"
-        self.resp_data = ""
-        self.json_data = json.loads(str(requests.get("http://www.mangapanda.com/actions/selector/",
-                                                     params = { "id": self._get_mangaid_(manga_url + "1"),
-                                                                "which": 191919 }).text))
+        self.__resp_obj__ = None
+        self.__json_data__ = json.loads(str(requests.get("http://www.mangapanda.com/actions/selector/",
+                                        params = { "id": self._get_mangaid_(manga_url + "1"), "which": 191919 }).text))
 
         print("Building indexes and tables - Done")
 
         if (begin or end) is None:
-            begin, end = 1, len(self.json_data)
+            begin, end = 1, len(self.__json_data__)
             print("\nAttempting to download the complete manga.")
             logging.info("Specific chapters not downloaded. Complete Manga will be downloaded.")
 
-        self.Constants = {
+        self.__Constants__ = {
             "manga_name": manga_name,
             "begin": begin,
             "end": end,
@@ -87,11 +86,11 @@ class MangaScrapper():
     def start_scrapping(self):
         print(title)
 
-        save_loc = self.Constants['manga_save_loc']
-        begin, end = self.Constants['begin'], self.Constants['end']
+        save_loc = self.__Constants__['manga_save_loc']
+        begin, end = self.__Constants__['begin'], self.__Constants__['end']
 
-        print("Manga To be Downloaded :- " + self.Constants['manga_name'])
-        logging.info("Manga To be Downloaded :- " + self.Constants['manga_name'])
+        print("Manga To be Downloaded :- " + self.__Constants__['manga_name'])
+        logging.info("Manga To be Downloaded :- " + self.__Constants__['manga_name'])
 
         if not os.path.exists(save_loc):
             os.mkdir(save_loc)
@@ -99,16 +98,15 @@ class MangaScrapper():
         else:
             logging.warn("The Manga download directory exists and further chapters "
                          "to be saved there.")
-            pass
 
         for chap in xrange(begin, end + 1):
-            chap_url = self.Constants['manga_url'] + str(chap)
-            chapname = self.json_data[chap - 1]['chapter_name']
+            chap_url = self.__Constants__['manga_url'] + str(chap)
+            chapname = self.__json_data__[chap - 1]['chapter_name']
 
             if chapname == "":
                 chapname = "Chapter " + str(chap)
             else:
-                chapname = "Chapter {0} - {1} ".format(str(chap), self.json_data[chap - 1]['chapter_name'])
+                chapname = "Chapter {0} - {1} ".format(str(chap), self.__json_data__[chap - 1]['chapter_name'])
 
             chap_save_loc = os.path.join(save_loc, chapname)
 
@@ -117,7 +115,6 @@ class MangaScrapper():
             else:
                 logging.warn("The Manga Chapter directory exists and further chapters "
                              "to be saved there.")
-                pass
 
             no_of_pages = self._get_chapter_pagecount_(chap_url)
 
@@ -126,40 +123,44 @@ class MangaScrapper():
             pdf_save_loc = os.path.join(save_loc, chapname + ".pdf")
             doc = SimpleDocTemplate(pdf_save_loc, pagesize = A2)
             parts = []
-
-            for page in xrange(1, no_of_pages + 1):
-
+            page = 1
+            while page <= no_of_pages:
                 img_save_loc = os.path.join(chap_save_loc, str(page) + ".jpg")
 
                 if not os.path.exists(img_save_loc):
                     img_url = self._get_page_img_url_(chap_url + "/" + str(page))
-                    self.store_response_data(img_url)
+                    self.set_response_ins(img_url)
 
-                    with open(img_save_loc, "wb") as f:
-                        f.write(self.resp_data)
-                        parts.append(Image(img_save_loc))
-                    print("\t\t[-] Page {0} Image Saved as {1}".format(page, str(page) + ".jpg"))
+                    if self.__resp_obj__.status_code == 503:
+                        page -= 1
+                        continue
+                    else:
+                        with open(img_save_loc, "wb") as f:
+                            f.write(self.__resp_obj__.content)
+                            parts.append(Image(img_save_loc))
+                        print("\t\t[-] Page {0} Image Saved as {1}".format(page, str(page) + ".jpg"))
                 else:
                     parts.append(Image(img_save_loc))
                     pass
+                page += 1
 
             doc.build(parts)
             end_message = """
-                        All the Chapters Requested has been downloaded.
-                        Manga Saved in : {0}
+                    All the Chapters Requested has been downloaded.
+                    Manga Saved in : {0}
 
-                        Thank you! For Using MangaScrapper. If you Like this tool please
-                        consider donating or Flattr this Project.
+                    Thank you! For Using MangaScrapper. If you Like this tool please
+                    consider donating or Flattr this Project.
             """.format(save_loc)
             print(end_message)
 
-    def store_response_data(self, pageurl):
+    def set_response_ins(self, pageurl):
         try:
             s = requests.Session()
             a = requests.adapters.HTTPAdapter(max_retries = 5)
             s.mount('http://', a)
             resp = s.get(pageurl, timeout = 30)
-            self.resp_data = resp.content
+            self.__resp_obj__ = resp
             resp.close()
         except requests.exceptions.Timeout:
             print("Very Slow Internet Connection.")
@@ -168,7 +169,7 @@ class MangaScrapper():
             print("Network Unavailable. Check your connection.")
             logging.error("Network Unavailable. Check your connection.")
         except requests.exceptions.MissingSchema:
-            logging.error("Problem with connection. Retrying ... ")
+            logging.error("503 Service Unavailable. Retrying download ... ")
 
     def _get_chapter_pagecount_(self, chapurl):
         """
@@ -177,9 +178,9 @@ class MangaScrapper():
         :return: # of Pages in a chapter
         :rtype: int
         """
-        self.store_response_data(chapurl)
-        pagedata = html.fromstring(self.resp_data)
-        return int(pagedata.xpath(self.Constants["lastpage_xpath"])[0])
+        self.set_response_ins(chapurl)
+        pagedata = html.fromstring(self.__resp_obj__.content)
+        return int(pagedata.xpath(self.__Constants__["lastpage_xpath"])[0])
 
     def _get_mangaid_(self, page_url):
         """
@@ -189,8 +190,8 @@ class MangaScrapper():
         :rtype: int
         """
         mangaid_pat = r"document\[\'mangaid\'\] = [0-9]{0,};"
-        self.store_response_data(page_url)
-        match = re.search(mangaid_pat, self.resp_data)
+        self.set_response_ins(page_url)
+        match = re.search(mangaid_pat, self.__resp_obj__.content)
         return int(match.group().split("=")[1].strip().split(";")[0])
 
     def _get_page_img_url_(self, page_url):
@@ -202,9 +203,9 @@ class MangaScrapper():
         """
         url = page_url
         try:
-            self.store_response_data(page_url)
-            pagedata = html.fromstring(self.resp_data)
-            return str(pagedata.xpath(self.Constants['img_xpath'])[0])
+            self.set_response_ins(page_url)
+            pagedata = html.fromstring(self.__resp_obj__.content)
+            return str(pagedata.xpath(self.__Constants__['img_xpath'])[0])
         except IndexError:
             pass
 
