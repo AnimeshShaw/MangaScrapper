@@ -84,22 +84,30 @@ class MangaScrapper():
         return text.strip().replace(" ", "-").lower()
 
     def start_scrapping(self):
-        print(title)
-
         save_loc = self.__Constants__['manga_save_loc']
-        begin, end = self.__Constants__['begin'], self.__Constants__['end']
+        chap, begin, end = 1, self.__Constants__['begin'], self.__Constants__['end']
+        end_message = """
+            All the Chapters Requested has been downloaded.
+            Manga Saved in : {0}
 
+            Thank you! For Using MangaScrapper. If you Like this tool please
+            consider donating or Flattr this Project.
+        """.format(save_loc)
+
+        print(title)
         print("Manga To be Downloaded :- " + self.__Constants__['manga_name'])
         logging.info("Manga To be Downloaded :- " + self.__Constants__['manga_name'])
 
         if not os.path.exists(save_loc):
             os.mkdir(save_loc)
             print("Manga to be stored in : " + save_loc)
+            logging.info("Manga to be stored in : " + save_loc)
         else:
             logging.warn("The Manga download directory exists and further chapters "
                          "to be saved there.")
 
-        for chap in xrange(begin, end + 1):
+        for chap in range(begin, end + 1):
+
             chap_url = self.__Constants__['manga_url'] + str(chap)
             chapname = self.__json_data__[chap - 1]['chapter_name']
 
@@ -115,15 +123,14 @@ class MangaScrapper():
             else:
                 logging.warn("The Manga Chapter directory exists and further chapters "
                              "to be saved there.")
-
-            no_of_pages = self._get_chapter_pagecount_(chap_url)
-
             print("\n\t[+] Downloading Chapter {0} : {1}".format(str(chap), chapname))
 
+            no_of_pages = self._get_chapter_pagecount_(chap_url)
             pdf_save_loc = os.path.join(save_loc, chapname + ".pdf")
             doc = SimpleDocTemplate(pdf_save_loc, pagesize = A2)
             parts = []
             page = 1
+
             while page <= no_of_pages:
                 img_save_loc = os.path.join(chap_save_loc, str(page) + ".jpg")
 
@@ -134,25 +141,22 @@ class MangaScrapper():
                     if self.__resp_obj__.status_code == 503:
                         page -= 1
                         continue
-                    else:
-                        with open(img_save_loc, "wb") as f:
-                            f.write(self.__resp_obj__.content)
-                            parts.append(Image(img_save_loc))
-                        print("\t\t[-] Page {0} Image Saved as {1}".format(page, str(page) + ".jpg"))
+                    with open(img_save_loc, "wb") as f:
+                        f.write(self.__resp_obj__.content)
+                        parts.append(Image(img_save_loc))
+                    print("\t\t[-] Page {0} Image Saved as {1}".format(page, str(page) + ".jpg"))
                 else:
+                    logging.warn("\t[-] Page {0} Image exists and therefore skipping "
+                                 "{1}".format(page, str(page) + ".jpg"))
                     parts.append(Image(img_save_loc))
-                    pass
+
                 page += 1
-
             doc.build(parts)
-            end_message = """
-                    All the Chapters Requested has been downloaded.
-                    Manga Saved in : {0}
 
-                    Thank you! For Using MangaScrapper. If you Like this tool please
-                    consider donating or Flattr this Project.
-            """.format(save_loc)
+        if chap == end:
             print(end_message)
+        else:
+            logging.error("\tUnable to download the requested Manga chapters. Try Again!")
 
     def set_response_ins(self, pageurl):
         try:
@@ -163,13 +167,11 @@ class MangaScrapper():
             self.__resp_obj__ = resp
             resp.close()
         except requests.exceptions.Timeout:
-            print("Very Slow Internet Connection.")
-            logging.error("Very Slow Internet Connection.")
+            logging.error("\tVery Slow Internet Connection.")
         except requests.exceptions.ConnectionError:
-            print("Network Unavailable. Check your connection.")
-            logging.error("Network Unavailable. Check your connection.")
+            logging.error("\tNetwork Unavailable. Check your connection.")
         except requests.exceptions.MissingSchema:
-            logging.error("503 Service Unavailable. Retrying download ... ")
+            logging.error("\t503 Service Unavailable. Retrying download ... ")
 
     def _get_chapter_pagecount_(self, chapurl):
         """
@@ -201,7 +203,6 @@ class MangaScrapper():
         :return: Returns URL of the image in page_url.
         :rtype: str
         """
-        url = page_url
         try:
             self.set_response_ins(page_url)
             pagedata = html.fromstring(self.__resp_obj__.content)
@@ -212,7 +213,7 @@ class MangaScrapper():
 
 def check_negative(value):
     """
-    Checks for Negetive values in arguments.
+    Checks for Negative values in arguments.
     :param value: Value whose positive nature is checked.
     :return:
     :rtype: int
