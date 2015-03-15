@@ -2,3 +2,4 @@ requests
 reportlab
 lxml
 argparse
+setuptools
