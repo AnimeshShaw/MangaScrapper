@@ -3,3 +3,4 @@ reportlab
 lxml
 argparse
 setuptools
+simplejson
