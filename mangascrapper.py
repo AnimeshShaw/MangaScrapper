@@ -133,23 +133,25 @@ class MangaScrapper():
 
             while page <= no_of_pages:
                 img_save_loc = os.path.join(chap_save_loc, str(page) + ".jpg")
-
+                errorocc = False
                 if not os.path.exists(img_save_loc):
                     img_url = self._get_page_img_url_(chap_url + "/" + str(page))
                     self.set_response_ins(img_url)
 
                     if self.__resp_obj__.status_code == 503:
+                        errorocc = True
+
+                    if not errorocc:
+                        with open(img_save_loc, "wb") as f:
+                            f.write(self.__resp_obj__.content)
+                            parts.append(Image(img_save_loc))
+                        print("\t\t[-] Page {0} Image Saved as {1}".format(page, str(page) + ".jpg"))
+                    else:
                         page -= 1
-                        continue
-                    with open(img_save_loc, "wb") as f:
-                        f.write(self.__resp_obj__.content)
-                        parts.append(Image(img_save_loc))
-                    print("\t\t[-] Page {0} Image Saved as {1}".format(page, str(page) + ".jpg"))
                 else:
                     logging.warn("\t[-] Page {0} Image exists and therefore skipping "
                                  "{1}".format(page, str(page) + ".jpg"))
                     parts.append(Image(img_save_loc))
-
                 page += 1
             doc.build(parts)
 
