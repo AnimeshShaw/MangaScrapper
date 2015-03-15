@@ -36,7 +36,7 @@ ebook in pdf format.
 
 
 class MangaScrapper():
-    def __init__(self, manga_name, begin, end, storage_loc):
+    def __init__(self, manga_name, begin, end, storage_loc, latest=False):
         """
         Constructor to initialize the requirements and variables to download manga.
 
@@ -56,7 +56,11 @@ class MangaScrapper():
 
         print("Building indexes and tables - Done")
 
-        if (begin or end) is None:
+        if latest:
+            begin, end = len(self.__json_data__), len(self.__json_data__)
+            print("\nDownloading the latest manga chapter..")
+            logging.info("Latest Manga Chapter will be downloaded.")
+        elif (begin or end) is None:
             begin, end = 1, len(self.__json_data__)
             print("\nAttempting to download the complete manga.")
             logging.info("Specific chapters not downloaded. Complete Manga will be downloaded.")
@@ -248,13 +252,20 @@ def main():
                         help="Give the chapter number if you want to download only "
                              "one chapter.")
     parser.add_argument('-l', '--location', type=str, help="The location where manga has "
-                                                           "to be downloaded. By default stored in the current directory.",
+                              "to be downloaded. By default stored in the current directory.",
                         default=os.getcwd())
+    parser.add_argument('-lc', '--latest', action='store_true', help="Download the latest Manga chapter")
 
     args = parser.parse_args()
 
     if args.chapter and (args.begin or args.end):
         print("--chapter argument cannot be used along with --begin/--end. \n")
+        parser.parse_args(["--help"])
+    elif args.chapter and args.latest:
+        print("--chapter argument cannot be used along with --latest \n")
+        parser.parse_args(["--help"])
+    elif args.latest and (args.begin or args.end):
+        print("--latest argument cannot be used along with --begin/--end. \n")
         parser.parse_args(["--help"])
     else:
         if args.location and not os.path.isdir(args.location):
@@ -262,7 +273,9 @@ def main():
         elif not os.access(args.location, os.W_OK):
             raise OSError("You do not have permission to write in the given path. Run as root.")
 
-        if args.chapter:
+        if args.latest:
+            scrape = MangaScrapper(args.manga_name, args.chapter, args.chapter, args.location, latest=True)
+        elif args.chapter:
             scrape = MangaScrapper(args.manga_name, args.chapter, args.chapter, args.location)
         else:
             scrape = MangaScrapper(args.manga_name, args.begin, args.end, args.location)
