@@ -1,4 +1,4 @@
-import json
+import simplejson
 import os
 import re
 import logging
@@ -50,8 +50,9 @@ class MangaScrapper():
 
         manga_url = "http://www.mangapanda.com/" + self.todashcase(manga_name) + "/"
         self.__resp_obj__ = None
-        self.__json_data__ = json.loads(str(requests.get("http://www.mangapanda.com/actions/selector/",
-                                        params = { "id": self._get_mangaid_(manga_url + "1"), "which": 191919 }).text))
+        self.__json_data__ = simplejson.loads(str(requests.get("http://www.mangapanda.com/actions/selector/",
+                                                               params={"id": self._get_mangaid_(manga_url + "1"),
+                                                                       "which": 191919}).text))
 
         print("Building indexes and tables - Done")
 
@@ -103,8 +104,8 @@ class MangaScrapper():
             print("Manga to be stored in : " + save_loc)
             logging.info("Manga to be stored in : " + save_loc)
         else:
-            logging.warn("The Manga download directory exists and further chapters "
-                         "to be saved there.")
+            logging.warning("The Manga download directory exists and further chapters "
+                            "to be saved there.")
 
         for chap in range(begin, end + 1):
 
@@ -121,13 +122,13 @@ class MangaScrapper():
             if not os.path.exists(chap_save_loc):
                 os.mkdir(chap_save_loc)
             else:
-                logging.warn("The Manga Chapter directory exists and further chapters "
-                             "to be saved there.")
+                logging.warning("The Manga Chapter directory exists and further chapters "
+                                "to be saved there.")
             print("\n\t[+] Downloading Chapter {0} : {1}".format(str(chap), chapname))
 
             no_of_pages = self._get_chapter_pagecount_(chap_url)
             pdf_save_loc = os.path.join(save_loc, chapname + ".pdf")
-            doc = SimpleDocTemplate(pdf_save_loc, pagesize = A2)
+            doc = SimpleDocTemplate(pdf_save_loc, pagesize=A2)
             parts = []
             page = 1
 
@@ -149,8 +150,8 @@ class MangaScrapper():
                     else:
                         page -= 1
                 else:
-                    logging.warn("\t[-] Page {0} Image exists and therefore skipping "
-                                 "{1}".format(page, str(page) + ".jpg"))
+                    logging.warning("\t[-] Page {0} Image exists and therefore skipping "
+                                    "{1}".format(page, str(page) + ".jpg"))
                     parts.append(Image(img_save_loc))
                 page += 1
             doc.build(parts)
@@ -163,9 +164,9 @@ class MangaScrapper():
     def set_response_ins(self, pageurl):
         try:
             s = requests.Session()
-            a = requests.adapters.HTTPAdapter(max_retries = 5)
+            a = requests.adapters.HTTPAdapter(max_retries=5)
             s.mount('http://', a)
-            resp = s.get(pageurl, timeout = 30)
+            resp = s.get(pageurl, timeout=30)
             self.__resp_obj__ = resp
             resp.close()
         except requests.exceptions.Timeout:
@@ -195,7 +196,7 @@ class MangaScrapper():
         """
         mangaid_pat = r"document\[\'mangaid\'\] = [0-9]{0,};"
         self.set_response_ins(page_url)
-        match = re.search(mangaid_pat, self.__resp_obj__.content)
+        match = re.search(mangaid_pat, self.__resp_obj__.text)
         return int(match.group().split("=")[1].strip().split(";")[0])
 
     def _get_page_img_url_(self, page_url):
@@ -236,19 +237,19 @@ def main():
     desc = "MangaScrapper is simple, easy, and fast CLI tool to download manga's " \
            "and also create an ebook in pdf format."
 
-    parser = argparse.ArgumentParser(description=desc, prog = "mangascrapper.py")
-    parser.add_argument('manga_name', type = str, help = "Enter the name of the manga.")
-    parser.add_argument('-b', '--begin', type = check_negative,
-                        help = "Enter the starting chapter. By default its first chapter")
-    parser.add_argument('-e', '--end', type = check_negative,
-                        help = "Enter the ending chapter. Defaults to the last chapter "
-                               "possible.")
-    parser.add_argument('-c', '--chapter', type = check_negative,
-                        help = "Give the chapter number if you want to download only "
-                               "one chapter.")
-    parser.add_argument('-l', '--location', type = str, help = "The location where manga has "
-                        "to be downloaded. By default stored in the current directory.",
-                        default = os.getcwd())
+    parser = argparse.ArgumentParser(description=desc, prog="mangascrapper.py")
+    parser.add_argument('manga_name', type=str, help="Enter the name of the manga.")
+    parser.add_argument('-b', '--begin', type=check_negative,
+                        help="Enter the starting chapter. By default its first chapter")
+    parser.add_argument('-e', '--end', type=check_negative,
+                        help="Enter the ending chapter. Defaults to the last chapter "
+                             "possible.")
+    parser.add_argument('-c', '--chapter', type=check_negative,
+                        help="Give the chapter number if you want to download only "
+                             "one chapter.")
+    parser.add_argument('-l', '--location', type=str, help="The location where manga has "
+                                                           "to be downloaded. By default stored in the current directory.",
+                        default=os.getcwd())
 
     args = parser.parse_args()
 
