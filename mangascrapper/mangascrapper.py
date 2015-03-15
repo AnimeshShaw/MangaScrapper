@@ -233,8 +233,10 @@ def main():
 
     :raise OSError:
     """
-    parser = argparse.ArgumentParser()
+    desc = "MangaScrapper is simple, easy, and fast CLI tool to download manga's " \
+           "and also create an ebook in pdf format."
 
+    parser = argparse.ArgumentParser(description=desc, prog = "mangascrapper.py")
     parser.add_argument('manga_name', type = str, help = "Enter the name of the manga.")
     parser.add_argument('-b', '--begin', type = check_negative,
                         help = "Enter the starting chapter. By default its first chapter")
