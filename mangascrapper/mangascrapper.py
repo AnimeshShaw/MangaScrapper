@@ -40,6 +40,8 @@ class MangaScrapper():
         """
         Constructor to initialize the requirements and variables to download manga.
 
+        :param latest: If true downloads the latest manga chapter.
+        :type latest: bool
         :param manga_name: Name of the Manga to be downloaded
         :param begin: Manga chapter from which the download will start.
         :param end: Manga chapter after which the download will stop.
@@ -119,7 +121,7 @@ class MangaScrapper():
             if chapname == "":
                 chapname = "Chapter " + str(chap)
             else:
-                chapname = "Chapter {0} - {1} ".format(str(chap), self.__json_data__[chap - 1]['chapter_name'])
+                chapname = "Chapter {0} - {1}".format(str(chap), self.__json_data__[chap - 1]['chapter_name'])
 
             chap_save_loc = os.path.join(save_loc, chapname)
 
@@ -166,6 +168,10 @@ class MangaScrapper():
             logging.error("\tUnable to download the requested Manga chapters. Try Again!")
 
     def set_response_ins(self, pageurl):
+        """
+        Sets the response for the GET request of pageurl and stores it in self.resp
+        :param pageurl: url for which we store the response.
+        """
         try:
             s = requests.Session()
             a = requests.adapters.HTTPAdapter(max_retries=5)
