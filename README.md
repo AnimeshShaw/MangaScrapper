@@ -15,9 +15,9 @@
 
 # MangaScrapper 
 ===============
-It is simple, easy, and fast CLI tool to download manga's and save them in a directory and as well as save them as an ebook in pdf format. 
+It is simple, easy, and fast CLI tool to download manga's and save them in a directory and as well as save them as an ebook in pdf format. It is compatible with Python 2.7.X+ and Python 3.3+.
 
-*Requires __Python 2.7__ to run.* Manga's are scraped from [MangaPanda](http://www.mangapanda.com/). Whole or complete Manga can be downloaded, or a single chapter or can be downloaded in a range. All these customizations are provided by this tool.
+Manga's are scraped from [MangaPanda](http://www.mangapanda.com/). Whole or complete Manga can be downloaded, or a single chapter or can be downloaded in a range. All these customizations are provided by this tool.
 
 **MangaScrapper** makes use of 3rd party libraries for HTTP Requests and HTML processing. You need to fulfill these requirements before using this tool.
 
