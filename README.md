@@ -31,24 +31,29 @@ The *requirements.txt* file is present in the repo.
 ==============
 
 	usage: mangascrapper.py [-h] [-b BEGIN] [-e END] [-c CHAPTER] [-l LOCATION]
-							manga_name
-	
-	positional arguments:
-	  manga_name            Enter the name of the manga.
-	
-	optional arguments:
-	  -h, --help            show this help message and exit
-	  -b BEGIN, --begin BEGIN
-							Enter the starting chapter. By default its first
-							chapter
-	  -e END, --end END     Enter the ending chapter. Defaults to the last chapter
-							possible.
-	  -c CHAPTER, --chapter CHAPTER
-							Give the chapter number if you want to download only
-							one chapter.
-	  -l LOCATION, --location LOCATION
-							The location where manga has to be downloaded. By
-							default stored in the current directory.
+                        [-lc]
+                        manga_name
+
+    MangaScrapper is simple, easy, and fast CLI tool to download manga's and also
+    create an ebook in pdf format.
+
+    positional arguments:
+      manga_name            Enter the name of the manga.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -b BEGIN, --begin BEGIN
+                            Enter the starting chapter. By default its first
+                            chapter
+      -e END, --end END     Enter the ending chapter. Defaults to the last chapter
+                            possible.
+      -c CHAPTER, --chapter CHAPTER
+                            Give the chapter number if you want to download only
+                            one chapter.
+      -l LOCATION, --location LOCATION
+                            The location where manga has to be downloaded. By
+                            default stored in the current directory.
+      -lc, --latest         Download the latest Manga chapter
 							
 
 # Example Usage
@@ -81,7 +86,18 @@ The *requirements.txt* file is present in the repo.
 *Example:-* 	
 
 	python mangascrapper.py --begin 1 --end 5 "Fairy Tail"
- 
+
+#### To download the latest Manga chapter.
+
+	python mangascrapper.py <manga-name> -lc
+	                or
+	python mangascrapper.py <manga-name> --latest
+
+*Example:-*
+
+	python mangascrapper.py "One Piece" --latest
+
+
 ## Screenshots
 
 ![Downloading complete manga "Once Again"](https://i.imgur.com/5dxlDWi.png)
