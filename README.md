@@ -13,9 +13,19 @@
 						  By : Psycho_Coder
 			  rC Developers @ rawCoders.com
 
+
+# Contents
+==========
+
+[*] About MangaScrapper.
+[*] Help & Usage Instructions.
+[*] Example Usage.
+[*] Viewing Comic Book Archives (CBR/CBZ/CBT).
+[*] Screenshots.
+
 # MangaScrapper 
 ===============
-It is simple, easy, and fast CLI tool to download manga's and save them in a directory and as well as save them as an ebook in pdf format. It is compatible with Python 2.7.X+ and Python 3.3+.
+It is simple, easy, and fast command line tool to download manga's and save them in a directory and as well as save them in different formats like CBR/CBZ/CBT/PDF. [CBR](http://en.wikipedia.org/wiki/Comic_book_archive) is a well known comic book archive format used by many across the Globe. It is compatible with Python 2.7.x+ and Python 3.3.x+.
 
 Manga's are scraped from [MangaPanda](http://www.mangapanda.com/). Whole or complete Manga can be downloaded, or a single chapter or can be downloaded in a range. All these customizations are provided by this tool.
 
@@ -25,13 +35,13 @@ Fulfill the requirements by executing the following in bash
 	
 	pip install -r requirements.txt
 
-The *requirements.txt* file is present in the repo. 
+The *requirements.txt* file is present in the repo.
 
 # Help & Usage
 ==============
 
 	usage: mangascrapper.py [-h] [-b BEGIN] [-e END] [-c CHAPTER] [-l LOCATION]
-                        [-lc]
+                        [-lc] [-out OUTFORMAT]
                         manga_name
 
     MangaScrapper is simple, easy, and fast CLI tool to download manga's and also
@@ -54,6 +64,9 @@ The *requirements.txt* file is present in the repo.
                             The location where manga has to be downloaded. By
                             default stored in the current directory.
       -lc, --latest         Download the latest Manga chapter
+      -out OUTFORMAT, --outformat OUTFORMAT
+                            Generated Manga/Comic book output formats. Available
+                            formats are cbr, cbz, cbt, & pdf; default is pdf.
 							
 
 # Example Usage
@@ -96,6 +109,24 @@ The *requirements.txt* file is present in the repo.
 *Example:-*
 
 	python mangascrapper.py "One Piece" --latest
+
+#### To download Manga chapters in different formats like CBR/CBZ/CBT/PDF
+
+You can use this argument with any other argument. By default the PDF format is used.
+
+	python mangascrapper.py <manga-name> -out cbr
+						or
+	python mangascrapper.py <manga-name> --outformat cbr
+
+*Example:-*
+
+	python mangascrapper.py --outformat cbr "Detective Conan"
+
+__More Query Examples__
+
+    python mangascrapper.py --outformat cbr --chapter 1 "Detective Conan"
+
+    python mangascrapper.py --outformat cbr --begin 1 --end 5 "Naruto"
 
 
 ## Screenshots
