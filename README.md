@@ -17,11 +17,11 @@
 # Contents
 ==========
 
-[*] About MangaScrapper.
-[*] Help & Usage Instructions.
-[*] Example Usage.
-[*] Viewing Comic Book Archives (CBR/CBZ/CBT).
-[*] Screenshots.
+* About MangaScrapper.
+* Help & Usage Instructions.
+* Example Usage.
+* Viewing Comic Book Archives (CBR/CBZ/CBT).
+* Screenshots.
 
 # MangaScrapper 
 ===============
