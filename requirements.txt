@@ -4,3 +4,5 @@ lxml
 argparse
 setuptools
 simplejson
+enum34
+natsort
