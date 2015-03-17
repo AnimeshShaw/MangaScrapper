@@ -1,17 +1,25 @@
-import simplejson
+#!/usr/bin/env python
+
 import os
 import re
 import logging
-from lxml import html
 import argparse
+import tarfile
+import zipfile
+from enum import Enum
 
+from natsort import natsorted
+import simplejson
+from lxml import html
 from reportlab.lib.pagesizes import A2
 from reportlab.platypus import SimpleDocTemplate, Image
 import requests
 import requests.adapters
 import requests.exceptions
 
+
 __author__ = 'Psycho_Coder'
+__version__ = '1.2'
 
 title = """
   __  __
@@ -28,6 +36,7 @@ title = """
 
                       By : Psycho_Coder
           rC Developers @ rawCoders.com
+          Version : 1.2
 
 A tool to download manga's and save them in
 a directory and as well as save them as an
@@ -35,11 +44,19 @@ ebook in pdf format.
 """
 
 
+class OutFormats(Enum):
+    CBR = "cbr"
+    CBZ = "cbz"
+    CBT = "cbt"
+    PDF = "pdf"
+
+
 class MangaScrapper():
-    def __init__(self, manga_name, begin, end, storage_loc, latest=False):
+    def __init__(self, manga_name, begin, end, storage_loc, latest=False, outformat=OutFormats.PDF):
         """
         Constructor to initialize the requirements and variables to download manga.
 
+        :param outformat: Output Format of the Manga in either PDF/CBR/CBZ/CBT
         :param latest: If true downloads the latest manga chapter.
         :type latest: bool
         :param manga_name: Name of the Manga to be downloaded
@@ -51,11 +68,12 @@ class MangaScrapper():
         print("Building up indexes...")
 
         manga_url = "http://www.mangapanda.com/" + self.todashcase(manga_name) + "/"
+
+        self.__outformat__ = outformat
         self.__resp_obj__ = None
         self.__json_data__ = simplejson.loads(str(requests.get("http://www.mangapanda.com/actions/selector/",
                                                                params={"id": self._get_mangaid_(manga_url + "1"),
                                                                        "which": 191919}).text))
-
         print("Building indexes and tables - Done")
 
         if latest:
@@ -88,9 +106,14 @@ class MangaScrapper():
         :type text: str
         :return Returns String in dash case.
         """
+        text = "".join([c for c in text if c not in "().*&;"])
         return text.strip().replace(" ", "-").lower()
 
     def start_scrapping(self):
+        """
+        Method that performs the crawling and saving the manga chapters and also
+        directs the output format of the manga chapter book.
+        """
         save_loc = self.__Constants__['manga_save_loc']
         chap, begin, end = 1, self.__Constants__['begin'], self.__Constants__['end']
         end_message = """
@@ -103,6 +126,7 @@ class MangaScrapper():
 
         print(title)
         print("Manga To be Downloaded :- " + self.__Constants__['manga_name'])
+        print("Manga Output Format :- " + str(self.__outformat__.value).upper())
         logging.info("Manga To be Downloaded :- " + self.__Constants__['manga_name'])
 
         if not os.path.exists(save_loc):
@@ -119,9 +143,10 @@ class MangaScrapper():
             chapname = self.__json_data__[chap - 1]['chapter_name']
 
             if chapname == "":
-                chapname = "Chapter " + str(chap)
+                chapname = self.__Constants__['manga_name'] + " - Chapter " + str(chap)
             else:
-                chapname = "Chapter {0} - {1}".format(str(chap), self.__json_data__[chap - 1]['chapter_name'])
+                chapname = self.__Constants__['manga_name'] + " - Chapter {0} - {1}".\
+                    format(str(chap), self.__json_data__[chap - 1]['chapter_name'])
 
             chap_save_loc = os.path.join(save_loc, chapname)
 
@@ -133,9 +158,6 @@ class MangaScrapper():
             print("\n\t[+] Downloading Chapter {0} : {1}".format(str(chap), chapname))
 
             no_of_pages = self._get_chapter_pagecount_(chap_url)
-            pdf_save_loc = os.path.join(save_loc, chapname + ".pdf")
-            doc = SimpleDocTemplate(pdf_save_loc, pagesize=A2)
-            parts = []
             page = 1
 
             while page <= no_of_pages:
@@ -143,7 +165,7 @@ class MangaScrapper():
                 errorocc = False
                 if not os.path.exists(img_save_loc):
                     img_url = self._get_page_img_url_(chap_url + "/" + str(page))
-                    self.set_response_ins(img_url)
+                    self._set_response_ins_(img_url)
 
                     if self.__resp_obj__.status_code == 503:
                         errorocc = True
@@ -151,23 +173,22 @@ class MangaScrapper():
                     if not errorocc:
                         with open(img_save_loc, "wb") as f:
                             f.write(self.__resp_obj__.content)
-                            parts.append(Image(img_save_loc))
                         print("\t\t[-] Page {0} Image Saved as {1}".format(page, str(page) + ".jpg"))
                     else:
                         page -= 1
                 else:
                     logging.warning("\t[-] Page {0} Image exists and therefore skipping "
                                     "{1}".format(page, str(page) + ".jpg"))
-                    parts.append(Image(img_save_loc))
                 page += 1
-            doc.build(parts)
+
+            self._create_comic_file_(chap_save_loc, self.__outformat__)
 
         if chap == end:
             print(end_message)
         else:
-            logging.error("\tUnable to download the requested Manga chapters. Try Again!")
+            logging.error("\tUnable to download the requested Manga chapters. Try Again!", logging.ERROR)
 
-    def set_response_ins(self, pageurl):
+    def _set_response_ins_(self, pageurl):
         """
         Sets the response for the GET request of pageurl and stores it in self.resp
         :param pageurl: url for which we store the response.
@@ -180,11 +201,11 @@ class MangaScrapper():
             self.__resp_obj__ = resp
             resp.close()
         except requests.exceptions.Timeout:
-            logging.error("\tVery Slow Internet Connection.")
+            logging.error("\tVery Slow Internet Connection.", logging.ERROR)
         except requests.exceptions.ConnectionError:
-            logging.error("\tNetwork Unavailable. Check your connection.")
+            logging.error("\tNetwork Unavailable. Check your connection.", logging.ERROR)
         except requests.exceptions.MissingSchema:
-            logging.error("\t503 Service Unavailable. Retrying download ... ")
+            logging.error("\t503 Service Unavailable. Retrying download ... ", logging.ERROR)
 
     def _get_chapter_pagecount_(self, chapurl):
         """
@@ -193,7 +214,7 @@ class MangaScrapper():
         :return: # of Pages in a chapter
         :rtype: int
         """
-        self.set_response_ins(chapurl)
+        self._set_response_ins_(chapurl)
         pagedata = html.fromstring(self.__resp_obj__.content)
         return int(pagedata.xpath(self.__Constants__["lastpage_xpath"])[0])
 
@@ -205,7 +226,7 @@ class MangaScrapper():
         :rtype: int
         """
         mangaid_pat = r"document\[\'mangaid\'\] = [0-9]{0,};"
-        self.set_response_ins(page_url)
+        self._set_response_ins_(page_url)
         match = re.search(mangaid_pat, self.__resp_obj__.text)
         return int(match.group().split("=")[1].strip().split(";")[0])
 
@@ -217,11 +238,76 @@ class MangaScrapper():
         :rtype: str
         """
         try:
-            self.set_response_ins(page_url)
+            self._set_response_ins_(page_url)
             pagedata = html.fromstring(self.__resp_obj__.content)
             return str(pagedata.xpath(self.__Constants__['img_xpath'])[0])
         except IndexError:
             pass
+
+    def _correct_img_size_(self, imgpath):
+        pass
+
+    def _create_comic_file_(self, chap_save_loc, comic_format):
+        chapname = os.path.basename(chap_save_loc)
+
+        if self.__outformat__ == OutFormats.PDF:
+            img_list = natsorted(os.listdir(chap_save_loc))
+            pdf_save_loc = chap_save_loc + ".pdf"
+            doc = SimpleDocTemplate(pdf_save_loc, pagesize=A2)
+            parts = [Image(os.path.join(chap_save_loc, img)) for img in img_list]
+
+            try:
+                doc.build(parts)
+            except PermissionError:
+                logging.error("Missing Permission to write. File open in system editor or missing "
+                              "write permissions.", logging.ERROR)
+        elif comic_format == OutFormats.CBR:
+            cbr_save_loc = chap_save_loc
+            self._create_cbz_(cbr_save_loc, chapname + ".cbr")
+        elif comic_format == OutFormats.CBZ:
+            cbr_save_loc = chap_save_loc
+            self._create_cbz_(cbr_save_loc, chapname + ".cbz")
+        elif comic_format == OutFormats.CBT:
+            cbr_save_loc = chap_save_loc
+            self._create_cbt_(cbr_save_loc, chapname + ".cbt")
+
+    @staticmethod
+    def _create_cbz_(dirpath, archivename):
+        """
+
+        :param dirpath:
+        :param archivename:
+        """
+        currdir = os.getcwd()
+        try:
+            import zlib
+
+            compression = zipfile.ZIP_DEFLATED
+        except ImportError:
+            logging.warning("zlib library not available. Using ZIP_STORED compression.")
+            compression = zipfile.ZIP_STORED
+        try:
+            with zipfile.ZipFile(archivename, "w", compression) as zf:
+                os.chdir(os.path.abspath(os.path.join(dirpath, os.pardir)))
+                name = os.path.basename(dirpath)
+                for file in os.listdir(name):
+                    zf.write(os.path.join(name, file))
+        except zipfile.BadZipfile:
+            logging.error("Unable to compile CBR file ", logging.ERROR)
+        os.chdir(currdir)
+
+    @staticmethod
+    def _create_cbt_(dirpath, archivename):
+        """
+
+        :param dirpath:
+        :param archivename:
+        """
+        try:
+            with tarfile.open(archivename, "w") as tar:
+                tar.add(dirpath, arcname=os.path.basename(dirpath))
+        except tarfile.TarError:
+            logging.error("Unable to create CBT file. Report to Developer.", logging.ERROR)
 
 
 def check_negative(value):
@@ -258,9 +344,12 @@ def main():
                         help="Give the chapter number if you want to download only "
                              "one chapter.")
     parser.add_argument('-l', '--location', type=str, help="The location where manga has "
-                              "to be downloaded. By default stored in the current directory.",
+                                                           "to be downloaded. By default stored in the current directory.",
                         default=os.getcwd())
     parser.add_argument('-lc', '--latest', action='store_true', help="Download the latest Manga chapter")
+    parser.add_argument('-out', '--outformat', type=str, help="Generated Manga/Comic book output formats. Available "
+                                                              "formats are cbr, cbz, cbt, & pdf; default is pdf.",
+                        default="pdf")
 
     args = parser.parse_args()
 
@@ -279,12 +368,22 @@ def main():
         elif not os.access(args.location, os.W_OK):
             raise OSError("You do not have permission to write in the given path. Run as root.")
 
-        if args.latest:
-            scrape = MangaScrapper(args.manga_name, args.chapter, args.chapter, args.location, latest=True)
-        elif args.chapter:
-            scrape = MangaScrapper(args.manga_name, args.chapter, args.chapter, args.location)
+        if args.outformat.strip().lower() == "cbr":
+            args.outformat = OutFormats.CBR
+        elif args.outformat.strip().lower() == "cbz":
+            args.outformat = OutFormats.CBZ
+        elif args.outformat.strip().lower() == "cbt":
+            args.outformat = OutFormats.CBT
         else:
-            scrape = MangaScrapper(args.manga_name, args.begin, args.end, args.location)
+            args.outformat = OutFormats.PDF
+
+        if args.latest:
+            scrape = MangaScrapper(args.manga_name, args.chapter, args.chapter, args.location, latest=True,
+                                   outformat=args.outformat)
+        elif args.chapter:
+            scrape = MangaScrapper(args.manga_name, args.chapter, args.chapter, args.location, outformat=args.outformat)
+        else:
+            scrape = MangaScrapper(args.manga_name, args.begin, args.end, args.location, outformat=args.outformat)
 
         scrape.start_scrapping()
 
