@@ -186,7 +186,7 @@ class MangaScrapper():
         if chap == end:
             print(end_message)
         else:
-            logging.error("\tUnable to download the requested Manga chapters. Try Again!", logging.ERROR)
+            logging.error("\tUnable to download the requested Manga chapters. Try Again!")
 
     def _set_response_ins_(self, pageurl):
         """
@@ -201,11 +201,11 @@ class MangaScrapper():
             self.__resp_obj__ = resp
             resp.close()
         except requests.exceptions.Timeout:
-            logging.error("\tVery Slow Internet Connection.", logging.ERROR)
+            logging.error("\tVery Slow Internet Connection.")
         except requests.exceptions.ConnectionError:
-            logging.error("\tNetwork Unavailable. Check your connection.", logging.ERROR)
+            logging.error("\tNetwork Unavailable. Check your connection.")
         except requests.exceptions.MissingSchema:
-            logging.error("\t503 Service Unavailable. Retrying download ... ", logging.ERROR)
+            logging.error("\t503 Service Unavailable. Retrying download ... ")
 
     def _get_chapter_pagecount_(self, chapurl):
         """
@@ -260,7 +260,7 @@ class MangaScrapper():
                 doc.build(parts)
             except PermissionError:
                 logging.error("Missing Permission to write. File open in system editor or missing "
-                              "write permissions.", logging.ERROR)
+                              "write permissions.")
         elif comic_format == OutFormats.CBR:
             cbr_save_loc = chap_save_loc
             self._create_cbz_(cbr_save_loc, chapname + ".cbr")
@@ -293,7 +293,7 @@ class MangaScrapper():
                 for file in os.listdir(name):
                     zf.write(os.path.join(name, file))
         except zipfile.BadZipfile:
-            logging.error("Unable to compile CBR file ", logging.ERROR)
+            logging.error("Unable to compile CBR file ")
         os.chdir(currdir)
 
     @staticmethod
@@ -307,7 +307,7 @@ class MangaScrapper():
             with tarfile.open(archivename, "w") as tar:
                 tar.add(dirpath, arcname=os.path.basename(dirpath))
         except tarfile.TarError:
-            logging.error("Unable to create CBT file. Report to Developer.", logging.ERROR)
+            logging.error("Unable to create CBT file. Report to Developer.")
 
 
 def check_negative(value):
