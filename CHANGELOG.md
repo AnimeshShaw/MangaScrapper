@@ -1,3 +1,8 @@
+## Version 1.2.1 Alpha
+
+1. Little Bug Fix.
+2. Little formatting and added docstrings.
+
 ## Version 1.2 Alpha
     
 1. Added Comic Book Format Archives like [CBR](http://en.wikipedia.org/wiki/Comic_book_archive), CBZ, CBT
