@@ -19,7 +19,7 @@ import requests.exceptions
 
 
 __author__ = 'Psycho_Coder'
-__version__ = '1.2'
+__version__ = '1.2.1'
 
 title = """
   __  __
@@ -36,7 +36,7 @@ title = """
 
                       By : Psycho_Coder
           rC Developers @ rawCoders.com
-          Version : 1.2
+          Version : 1.2.1
 
 A tool to download manga's and save them in
 a directory and as well as save them as an
@@ -71,9 +71,9 @@ class MangaScrapper():
 
         self.__outformat__ = outformat
         self.__resp_obj__ = None
-        self.__json_data__ = simplejson.loads(str(requests.get("http://www.mangapanda.com/actions/selector/",
-                                                               params={"id": self._get_mangaid_(manga_url + "1"),
-                                                                       "which": 191919}).text))
+        self._set_response_ins_("http://www.mangapanda.com/actions/selector/?id={0}&which=191919".format(
+            self._get_mangaid_(manga_url + "1")))
+        self.__json_data__ = simplejson.loads(str(self.__resp_obj__.text))
         print("Building indexes and tables - Done")
 
         if latest:
@@ -102,6 +102,7 @@ class MangaScrapper():
     def todashcase(text):
         """
         Change Sentences to lowercase and words separated by '-'
+
         :param text: String to convert to dash case.
         :type text: str
         :return Returns String in dash case.
@@ -145,7 +146,7 @@ class MangaScrapper():
             if chapname == "":
                 chapname = self.__Constants__['manga_name'] + " - Chapter " + str(chap)
             else:
-                chapname = self.__Constants__['manga_name'] + " - Chapter {0} - {1}".\
+                chapname = self.__Constants__['manga_name'] + " - Chapter {0} - {1}". \
                     format(str(chap), self.__json_data__[chap - 1]['chapter_name'])
 
             chap_save_loc = os.path.join(save_loc, chapname)
@@ -191,6 +192,7 @@ class MangaScrapper():
     def _set_response_ins_(self, pageurl):
         """
         Sets the response for the GET request of pageurl and stores it in self.resp
+
         :param pageurl: url for which we store the response.
         """
         try:
@@ -210,6 +212,7 @@ class MangaScrapper():
     def _get_chapter_pagecount_(self, chapurl):
         """
         Returns the # of Pages in a particular chapter.
+
         :param chapurl: Chapter URL from which the # of Pages to be retrieved.
         :return: # of Pages in a chapter
         :rtype: int
@@ -221,6 +224,7 @@ class MangaScrapper():
     def _get_mangaid_(self, page_url):
         """
         Returns the mangaid for a specific Manga.
+
         :param page_url: Page URL from which mangaid to be retrieved/
         :return: Returns Manga ID.
         :rtype: int
@@ -233,6 +237,7 @@ class MangaScrapper():
     def _get_page_img_url_(self, page_url):
         """
         Returns the image url in a page of a particular chapter in Manga.
+
         :param page_url: Page URL from which the image url is to be downloaded.
         :return: Returns URL of the image in page_url.
         :rtype: str
@@ -244,10 +249,13 @@ class MangaScrapper():
         except IndexError:
             pass
 
-    def _correct_img_size_(self, imgpath):
-        pass
-
     def _create_comic_file_(self, chap_save_loc, comic_format):
+        """
+        Controlling function that coordinates the generation of comic book archive formats.
+
+        :param chap_save_loc:
+        :param comic_format:
+        """
         chapname = os.path.basename(chap_save_loc)
 
         if self.__outformat__ == OutFormats.PDF:
@@ -274,9 +282,10 @@ class MangaScrapper():
     @staticmethod
     def _create_cbz_(dirpath, archivename):
         """
+        Create a Comic Book Archive in .cbz and .cbr format (Tar Compression)
 
-        :param dirpath:
-        :param archivename:
+        :param dirpath: Directory location to save the the book archive.
+        :param archivename: Name of the archive.
         """
         currdir = os.getcwd()
         try:
@@ -299,9 +308,10 @@ class MangaScrapper():
     @staticmethod
     def _create_cbt_(dirpath, archivename):
         """
+        Create a Comic Book Archive in .cbt format (Tar Compression)
 
-        :param dirpath:
-        :param archivename:
+        :param dirpath: Directory location to save the the book archive.
+        :param archivename: Name of the archive.
         """
         try:
             with tarfile.open(archivename, "w") as tar:
@@ -313,6 +323,7 @@ class MangaScrapper():
 def check_negative(value):
     """
     Checks for Negative values in arguments.
+
     :param value: Value whose positive nature is checked.
     :return:
     :rtype: int
@@ -328,7 +339,8 @@ def main():
     """
     Main Method and UI/CLI for the MangaScrapper.
 
-    :raise OSError:
+    :raise OSError: Error in case the storage location is invalid, or some other
+    errors has occurred.
     """
     desc = "MangaScrapper is simple, easy, and fast CLI tool to download manga's " \
            "and also create an ebook in pdf format."
@@ -343,8 +355,8 @@ def main():
     parser.add_argument('-c', '--chapter', type=check_negative,
                         help="Give the chapter number if you want to download only "
                              "one chapter.")
-    parser.add_argument('-l', '--location', type=str, help="The location where manga has "
-                                                           "to be downloaded. By default stored in the current directory.",
+    parser.add_argument('-l', '--location', type=str, help="The location where manga has to be downloaded. "
+                                                           "By default stored in the current directory.",
                         default=os.getcwd())
     parser.add_argument('-lc', '--latest', action='store_true', help="Download the latest Manga chapter")
     parser.add_argument('-out', '--outformat', type=str, help="Generated Manga/Comic book output formats. Available "
