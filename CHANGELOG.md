@@ -1,4 +1,4 @@
-## Version 1.2.1 Alpha
+## Version 1.2.1 Stable
 
 1. Little Bug Fix.
 2. Little formatting and added docstrings.
