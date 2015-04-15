@@ -11,8 +11,8 @@ def main():
         f.write("\"Manga Name\", URL\n")
 
         for i in range(len(manga_name_list)):
-            f.write("\"{0}\", http://www.mangapanda.com{1}\n".format(manga_name_list[i].encode('utf8'),
-                                                                     manga_url_list[i].encode('utf8')))
+            f.write("\"{0}\", http://www.mangapanda.com{1}\n".format(manga_name_list[i],
+                                                                     manga_url_list[i]))
 
 if __name__ == "__main__":
     main()
