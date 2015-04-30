@@ -110,6 +110,16 @@ class MangaScrapper():
         text = "".join([c for c in text if c not in "().*&;"])
         return text.strip().replace(" ", "-").lower()
 
+    @staticmethod
+    def cleantext(text):
+        """
+        Removes Special trailing characters from text (if any)
+
+        :param text:
+        :return: Cleaned Text
+        """
+        return "".join([c for c in text if c not in "().*&;"])
+
     def start_scrapping(self):
         """
         Method that performs the crawling and saving the manga chapters and also
@@ -149,6 +159,7 @@ class MangaScrapper():
                 chapname = self.__Constants__['manga_name'] + " - Chapter {0} - {1}". \
                     format(str(chap), self.__json_data__[chap - 1]['chapter_name'])
 
+            chapname = self.cleantext(chapname)
             chap_save_loc = os.path.join(save_loc, chapname)
 
             if not os.path.exists(chap_save_loc):
