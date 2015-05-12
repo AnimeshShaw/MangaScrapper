@@ -99,6 +99,26 @@ The *requirements.txt* file is present in the repo.
 
 	python mangascrapper.py --begin 1 --end 5 "Fairy Tail"
 
+#### To download Manga up to a particular chapter starting from first
+
+	python mangascrapper.py -e <ending-chapter-number> <manga-name>
+						or
+	python mangascrapper.py --end <ending-chapter-number> <manga-name>
+	
+*Example:-* 	
+
+	python mangascrapper.py --end 32 "Fairy Tail"
+
+#### To download complete Manga starting from a given chapter
+
+	python mangascrapper.py -b <beginning-chapter-number> <manga-name>
+						or
+	python mangascrapper.py --begin <beginning-chapter-number> <manga-name>
+	
+*Example:-* 	
+
+	python mangascrapper.py --begin 323 "Fairy Tail"
+
 #### To download the latest Manga chapter.
 
 	python mangascrapper.py <manga-name> -lc
