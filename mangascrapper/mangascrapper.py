@@ -3,6 +3,7 @@
 import os
 import re
 import logging
+import sys
 import argparse
 import tarfile
 import zipfile
@@ -118,7 +119,7 @@ class MangaScrapper():
         :param text:
         :return: Cleaned Text
         """
-        return "".join([c for c in text if c not in "().*&;"])
+        return "".join([c for c in text if c not in "().*&;?+"])
 
     def start_scrapping(self):
         """
@@ -270,25 +271,25 @@ class MangaScrapper():
         chapname = os.path.basename(chap_save_loc)
 
         if self.__outformat__ == OutFormats.PDF:
-            img_list = natsorted(os.listdir(chap_save_loc))
-            pdf_save_loc = chap_save_loc + ".pdf"
-            doc = SimpleDocTemplate(pdf_save_loc, pagesize=A2)
-            parts = [Image(os.path.join(chap_save_loc, img)) for img in img_list]
-
-            try:
-                doc.build(parts)
-            except PermissionError:
-                logging.error("Missing Permission to write. File open in system editor or missing "
-                              "write permissions.")
+            self._create_pdf_(chap_save_loc)
         elif comic_format == OutFormats.CBR:
-            cbr_save_loc = chap_save_loc
-            self._create_cbz_(cbr_save_loc, chapname + ".cbr")
+            self._create_cbz_(chap_save_loc, chapname + ".cbr")
         elif comic_format == OutFormats.CBZ:
-            cbr_save_loc = chap_save_loc
-            self._create_cbz_(cbr_save_loc, chapname + ".cbz")
+            self._create_cbz_(chap_save_loc, chapname + ".cbz")
         elif comic_format == OutFormats.CBT:
-            cbr_save_loc = chap_save_loc
-            self._create_cbt_(cbr_save_loc, chapname + ".cbt")
+            self._create_cbt_(chap_save_loc, chapname + ".cbt")
+
+    @staticmethod
+    def _create_pdf_(chap_save_loc):
+        img_list = natsorted(os.listdir(chap_save_loc))
+        pdf_save_loc = chap_save_loc + ".pdf"
+        doc = SimpleDocTemplate(pdf_save_loc, pagesize=A2)
+        parts = [Image(os.path.join(chap_save_loc, img)) for img in img_list]
+        try:
+            doc.build(parts)
+        except PermissionError:
+            logging.error("Missing Permission to write. File open in system editor or missing "
+                          "write permissions.")
 
     @staticmethod
     def _create_cbz_(dirpath, archivename):
@@ -336,7 +337,7 @@ def check_negative(value):
     Checks for Negative values in arguments.
 
     :param value: Value whose positive nature is checked.
-    :return:
+    :return: Returns value if not negative.
     :rtype: int
     :raise argparse.ArgumentTypeError:
     """
@@ -371,7 +372,7 @@ def main():
                         default=os.getcwd())
     parser.add_argument('-lc', '--latest', action='store_true', help="Download the latest Manga chapter")
     parser.add_argument('-out', '--outformat', type=str, help="Generated Manga/Comic book output formats. Available "
-                                                              "formats are cbr, cbz, cbt, & pdf; default is pdf.",
+                                                              "formats are cbr, cbz, cbt, & pdf; default is cbz.",
                         default="pdf")
 
     args = parser.parse_args()
@@ -397,8 +398,10 @@ def main():
             args.outformat = OutFormats.CBZ
         elif args.outformat.strip().lower() == "cbt":
             args.outformat = OutFormats.CBT
-        else:
+        elif args.outformat.strip().lower() == "pdf":
             args.outformat = OutFormats.PDF
+        else:
+            args.outformat = OutFormats.CBZ
 
         if args.latest:
             scrape = MangaScrapper(args.manga_name, args.chapter, args.chapter, args.location, latest=True,
@@ -412,4 +415,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
