@@ -1,3 +1,10 @@
+## Version 1.2.2 Stable
+1. Code Optimized
+2. Bug fixes.
+3. Custom --begin/--end Commands added. [For more info read README.md]
+4. Default Outformat Changed to CBZ.
+5. Better exception handling.
+
 ## Version 1.2.1 Stable
 
 1. Little Bug Fix.
