@@ -53,7 +53,7 @@ class OutFormats(Enum):
 
 
 class MangaScrapper():
-    def __init__(self, manga_name, begin, end, storage_loc, latest=False, outformat=OutFormats.PDF):
+    def __init__(self, manga_name, begin, end, storage_loc, outformat, latest=False):
         """
         Constructor to initialize the requirements and variables to download manga.
 
@@ -75,16 +75,27 @@ class MangaScrapper():
         self._set_response_ins_("http://www.mangapanda.com/actions/selector/?id={0}&which=191919".format(
             self._get_mangaid_(manga_url + "1")))
         self.__json_data__ = simplejson.loads(str(self.__resp_obj__.text))
-        print("Building indexes and tables - Done")
+        no_of_chap = len(self.__json_data__)
+        print("Building indexes - Done")
 
         if latest:
-            begin, end = len(self.__json_data__), len(self.__json_data__)
+            begin, end = no_of_chap, no_of_chap
             print("\nDownloading the latest manga chapter..")
             logging.info("Latest Manga Chapter will be downloaded.")
+        elif begin is not None and end is None:
+            begin, end = begin, no_of_chap
+            print("\nManga Download will start from chapter " + str(begin))
+        elif begin is None and end is not None:
+            begin, end = 1, end
+            print("\nManga Download will be downloaded upto chapter " + str(end))
         elif (begin or end) is None:
-            begin, end = 1, len(self.__json_data__)
+            begin, end = 1, no_of_chap
             print("\nAttempting to download the complete manga.")
-            logging.info("Specific chapters not downloaded. Complete Manga will be downloaded.")
+            logging.info("Complete Manga will be downloaded.")
+
+        if int(end) > no_of_chap:
+            raise ValueError("Invalid end chapter given. The manga consists of {0} chapters only "
+                             "whereas you requested to download upto {1} chapters".format(no_of_chap, end))
 
         self.__Constants__ = {
             "manga_name": manga_name,
@@ -270,7 +281,7 @@ class MangaScrapper():
         """
         chapname = os.path.basename(chap_save_loc)
 
-        if self.__outformat__ == OutFormats.PDF:
+        if comic_format == OutFormats.PDF:
             self._create_pdf_(chap_save_loc)
         elif comic_format == OutFormats.CBR:
             self._create_cbz_(chap_save_loc, chapname + ".cbr")
@@ -373,7 +384,7 @@ def main():
     parser.add_argument('-lc', '--latest', action='store_true', help="Download the latest Manga chapter")
     parser.add_argument('-out', '--outformat', type=str, help="Generated Manga/Comic book output formats. Available "
                                                               "formats are cbr, cbz, cbt, & pdf; default is cbz.",
-                        default="pdf")
+                        default="cbz")
 
     args = parser.parse_args()
 
@@ -400,17 +411,23 @@ def main():
             args.outformat = OutFormats.CBT
         elif args.outformat.strip().lower() == "pdf":
             args.outformat = OutFormats.PDF
-        else:
-            args.outformat = OutFormats.CBZ
 
         if args.latest:
-            scrape = MangaScrapper(args.manga_name, args.chapter, args.chapter, args.location, latest=True,
-                                   outformat=args.outformat)
+            scrape = MangaScrapper(args.manga_name, args.chapter, args.chapter, args.location, args.outformat,
+                                   latest=True)
         elif args.chapter:
-            scrape = MangaScrapper(args.manga_name, args.chapter, args.chapter, args.location, outformat=args.outformat)
+            scrape = MangaScrapper(args.manga_name, args.chapter, args.chapter, args.location, args.outformat)
+        elif args.begin and args.end:
+            if int(args.begin) < int(args.end):
+                scrape = MangaScrapper(args.manga_name, args.begin, args.end, args.location, args.outformat)
+            else:
+                raise AttributeError("begin must be smaller than end chapter")
+        elif args.begin:
+            scrape = MangaScrapper(args.manga_name, args.begin, None, args.location, args.outformat)
+        elif args.end:
+            scrape = MangaScrapper(args.manga_name, None, args.end, args.location, args.outformat)
         else:
-            scrape = MangaScrapper(args.manga_name, args.begin, args.end, args.location, outformat=args.outformat)
-
+            raise Exception("Unknown Error")
         scrape.start_scrapping()
 
 
