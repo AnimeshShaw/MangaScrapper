@@ -65,7 +65,7 @@ The *requirements.txt* file is present in the repo.
       -lc, --latest         Download the latest Manga chapter
       -out OUTFORMAT, --outformat OUTFORMAT
                             Generated Manga/Comic book output formats. Available
-                            formats are cbr, cbz, cbt, & pdf; default is pdf.
+                            formats are cbr, cbz, cbt, & pdf; default is cbz.
 							
 
 # Example Usage
