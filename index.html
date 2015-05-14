@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Mangascrapper by AnimeshShaw</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Mangascrapper</h1>
+      <h2 class="project-tagline">MangaScrapper is simple, easy, and fast CLI tool to download manga&#39;s and also create an ebook in pdf format.</h2>
+      <a href="https://github.com/AnimeshShaw/MangaScrapper" class="btn">View on GitHub</a>
+      <a href="https://github.com/AnimeshShaw/MangaScrapper/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/AnimeshShaw/MangaScrapper/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h2>
+<a id="contents" class="anchor" href="#contents" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contents</h2>
+
+<ul>
+<li><a href="https://github.com/AnimeshShaw/MangaScrapper#mangascrapper">About MangaScrapper</a></li>
+<li><a href="https://github.com/AnimeshShaw/MangaScrapper#help--usage">Help &amp; Usage Instructions</a></li>
+<li><a href="https://github.com/AnimeshShaw/MangaScrapper#example-usage">Example Usage</a></li>
+<li><a href="https://github.com/AnimeshShaw/MangaScrapper/blob/master/README.md#viewing-comic-book-archives-cbrcbzcbt">Viewing Comic Book Archives (CBR/CBZ/CBT)</a></li>
+<li><a href="https://github.com/AnimeshShaw/MangaScrapper#screenshots">Screenshots</a></li>
+</ul>
+
+<h1>
+<a id="mangascrapper" class="anchor" href="#mangascrapper" aria-hidden="true"><span class="octicon octicon-link"></span></a>MangaScrapper</h1>
+
+<h1></h1>
+
+<pre><code>  __  __
+ |  \/  | __ _ _ __   __ _  __ _
+ | |\/| |/ _` | '_ \ / _` |/ _` |
+ | |  | | (_| | | | | (_| | (_| |
+ |_|  |_|\__,_|_| |_|\__, |\__,_|
+  ____               |___/
+ / ___|  ___ _ __ __ _ _ __  _ __   ___ _ __
+ \___ \ / __| '__/ _` | '_ \| '_ \ / _ \ '__|
+  ___) | (__| | | (_| | |_) | |_) |  __/ |
+ |____/ \___|_|  \__,_| .__/| .__/ \___|_|
+                      |_|   |_|
+
+                      By : Psycho_Coder
+          rC Developers @ rawCoders.com
+</code></pre>
+
+<p>It is simple, easy, and fast command line tool to download manga's and save them in a directory and as well as save them in different formats like CBR/CBZ/CBT/PDF. <a href="http://en.wikipedia.org/wiki/Comic_book_archive">CBR</a> is a well known comic book archive format used by many across the Globe. It is compatible with Python 2.7.x+ and Python 3.3.x+.</p>
+
+<p>Manga's are scraped from <a href="http://www.mangapanda.com/">MangaPanda</a>. Complete Manga, or a single chapter or chapters in a range can be downloaded. All these customizations are provided by this tool in addition to several others.</p>
+
+<p><strong>MangaScrapper</strong> makes use of 3rd party libraries for HTTP Requests and HTML processing. You need to fulfill these requirements before using this tool.</p>
+
+<p>Fulfill the requirements by executing the following in bash shell.</p>
+
+<pre><code>pip install -r requirements.txt
+</code></pre>
+
+<p>The <em>requirements.txt</em> file is present in the repo.</p>
+
+<h1>
+<a id="help--usage" class="anchor" href="#help--usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Help &amp; Usage</h1>
+
+<h1></h1>
+
+<pre><code>usage: mangascrapper.py [-h] [-b BEGIN] [-e END] [-c CHAPTER] [-l LOCATION]
+                [-lc] [-out OUTFORMAT]
+                manga_name
+
+MangaScrapper is simple, easy, and fast CLI tool to download manga's and also
+create an ebook in pdf format.
+
+positional arguments:
+  manga_name            Enter the name of the manga.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -b BEGIN, --begin BEGIN
+                        Enter the starting chapter. By default its first
+                        chapter
+  -e END, --end END     Enter the ending chapter. Defaults to the last chapter
+                        possible.
+  -c CHAPTER, --chapter CHAPTER
+                        Give the chapter number if you want to download only
+                        one chapter.
+  -l LOCATION, --location LOCATION
+                        The location where manga has to be downloaded. By
+                        default stored in the current directory.
+  -lc, --latest         Download the latest Manga chapter
+  -out OUTFORMAT, --outformat OUTFORMAT
+                        Generated Manga/Comic book output formats. Available
+                        formats are cbr, cbz, cbt, &amp; pdf; default is cbz.
+</code></pre>
+
+<h1>
+<a id="example-usage" class="anchor" href="#example-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example Usage</h1>
+
+<h1></h1>
+
+<h4>
+<a id="to-download-complete-manga" class="anchor" href="#to-download-complete-manga" aria-hidden="true"><span class="octicon octicon-link"></span></a>To download complete Manga</h4>
+
+<pre><code>python mangascrapper.py &lt;manga-name&gt;
+</code></pre>
+
+<p><em>Example:-</em>     </p>
+
+<pre><code>python mangascrapper.py "One Piece"
+</code></pre>
+
+<h4>
+<a id="to-download-a-particular-chapter-of-manga" class="anchor" href="#to-download-a-particular-chapter-of-manga" aria-hidden="true"><span class="octicon octicon-link"></span></a>To download a particular chapter of Manga</h4>
+
+<pre><code>python mangascrapper.py -c &lt;chapter-number&gt; &lt;manga-name&gt;
+                    or
+python mangascrapper.py --chapter &lt;chapter-number&gt; &lt;manga-name&gt;
+</code></pre>
+
+<p><em>Example:-</em></p>
+
+<pre><code>python mangascrapper.py --chapter 1 "Detective Conan"
+</code></pre>
+
+<h4>
+<a id="to-download-chapters-of-manga-in-a-range" class="anchor" href="#to-download-chapters-of-manga-in-a-range" aria-hidden="true"><span class="octicon octicon-link"></span></a>To download chapters of Manga in a range</h4>
+
+<pre><code>python mangascrapper.py -b &lt;beginning-chapter-number&gt; -e &lt;ending-chapter-number&gt; &lt;manga-name&gt;
+                    or
+python mangascrapper.py --begin &lt;beginning-chapter-number&gt; --end &lt;ending-chapter-number&gt; &lt;manga-name&gt;
+</code></pre>
+
+<p><em>Example:-</em>     </p>
+
+<pre><code>python mangascrapper.py --begin 1 --end 5 "Fairy Tail"
+</code></pre>
+
+<h4>
+<a id="to-download-manga-up-to-a-particular-chapter-starting-from-first" class="anchor" href="#to-download-manga-up-to-a-particular-chapter-starting-from-first" aria-hidden="true"><span class="octicon octicon-link"></span></a>To download Manga up to a particular chapter starting from first</h4>
+
+<pre><code>python mangascrapper.py -e &lt;ending-chapter-number&gt; &lt;manga-name&gt;
+                    or
+python mangascrapper.py --end &lt;ending-chapter-number&gt; &lt;manga-name&gt;
+</code></pre>
+
+<p><em>Example:-</em>     </p>
+
+<pre><code>python mangascrapper.py --end 32 "Fairy Tail"
+</code></pre>
+
+<h4>
+<a id="to-download-complete-manga-starting-from-a-given-chapter" class="anchor" href="#to-download-complete-manga-starting-from-a-given-chapter" aria-hidden="true"><span class="octicon octicon-link"></span></a>To download complete Manga starting from a given chapter</h4>
+
+<pre><code>python mangascrapper.py -b &lt;beginning-chapter-number&gt; &lt;manga-name&gt;
+                    or
+python mangascrapper.py --begin &lt;beginning-chapter-number&gt; &lt;manga-name&gt;
+</code></pre>
+
+<p><em>Example:-</em>     </p>
+
+<pre><code>python mangascrapper.py --begin 323 "Fairy Tail"
+</code></pre>
+
+<h4>
+<a id="to-download-the-latest-manga-chapter" class="anchor" href="#to-download-the-latest-manga-chapter" aria-hidden="true"><span class="octicon octicon-link"></span></a>To download the latest Manga chapter.</h4>
+
+<pre><code>python mangascrapper.py &lt;manga-name&gt; -lc
+                or
+python mangascrapper.py &lt;manga-name&gt; --latest
+</code></pre>
+
+<p><em>Example:-</em></p>
+
+<pre><code>python mangascrapper.py "One Piece" --latest
+</code></pre>
+
+<h4>
+<a id="to-download-manga-chapters-in-different-formats-like-cbrcbzcbtpdf" class="anchor" href="#to-download-manga-chapters-in-different-formats-like-cbrcbzcbtpdf" aria-hidden="true"><span class="octicon octicon-link"></span></a>To download Manga chapters in different formats like CBR/CBZ/CBT/PDF</h4>
+
+<p>You can use this argument with any other argument. By default the PDF format is used.</p>
+
+<pre><code>python mangascrapper.py &lt;manga-name&gt; -out cbr
+                    or
+python mangascrapper.py &lt;manga-name&gt; --outformat cbr
+</code></pre>
+
+<p><em>Example:-</em></p>
+
+<pre><code>python mangascrapper.py --outformat cbr "Detective Conan"
+</code></pre>
+
+<p><strong>More Query Examples</strong></p>
+
+<pre><code>python mangascrapper.py --outformat cbr --chapter 1 "Detective Conan"
+
+python mangascrapper.py --outformat cbr --begin 1 --end 5 "Naruto"
+</code></pre>
+
+<h1>
+<a id="viewing-comic-book-archives-cbrcbzcbt" class="anchor" href="#viewing-comic-book-archives-cbrcbzcbt" aria-hidden="true"><span class="octicon octicon-link"></span></a>Viewing Comic Book Archives (CBR/CBZ/CBT)</h1>
+
+<h1></h1>
+
+<h4>
+<a id="viewing-in-linux" class="anchor" href="#viewing-in-linux" aria-hidden="true"><span class="octicon octicon-link"></span></a>Viewing in Linux</h4>
+
+<p>CBR files can be viewed using <a href="https://wiki.gnome.org/Apps/Evince">Evince</a></p>
+
+<p>Run Evince from bash shell as :- 
+    evince "path-cbr-file.cbr"</p>
+
+<p>example :- 
+    evince "Fairy Tail Zero - Chapter 9 - Treasure.cbr"</p>
+
+<h4>
+<a id="viewing-on-windows" class="anchor" href="#viewing-on-windows" aria-hidden="true"><span class="octicon octicon-link"></span></a>Viewing on Windows</h4>
+
+<p>The best free software to view CBR/CBZ/CBT comic book archive is <a href="http://www.cdisplayex.com/">CDisplayex</a>. Download and view the CBR files generated by this tool.</p>
+
+<h2>
+<a id="screenshots" class="anchor" href="#screenshots" aria-hidden="true"><span class="octicon octicon-link"></span></a>Screenshots</h2>
+
+<p>Downloading a single chapter from M\manga Black Magic</p>
+
+<h2>
+<a id="-4" class="anchor" href="#-4" aria-hidden="true"><span class="octicon octicon-link"></span></a><img src="http://i.imgur.com/NCK34Ka.png" alt='Downloading manga "Black Magic"'>
+</h2>
+
+<p>Help Options</p>
+
+<h2>
+<a id="-5" class="anchor" href="#-5" aria-hidden="true"><span class="octicon octicon-link"></span></a><img src="http://i.imgur.com/I6pbdHj.png" alt="Help Options">
+</h2>
+
+<p>Directory structure.</p>
+
+<h2>
+<a id="-6" class="anchor" href="#-6" aria-hidden="true"><span class="octicon octicon-link"></span></a><img src="https://i.imgur.com/W7D4YAL.png" alt="Usage Demo and Directory Structure made">
+</h2>
+
+<p>PDF's generated</p>
+
+<h2>
+<a id="-7" class="anchor" href="#-7" aria-hidden="true"><span class="octicon octicon-link"></span></a><img src="https://i.imgur.com/QiX9wTj.png" alt="A look at the PDF generated">
+</h2>
+
+<h2>
+<a id="-8" class="anchor" href="#-8" aria-hidden="true"><span class="octicon octicon-link"></span></a><img src="https://i.imgur.com/yhN8Rup.png" alt="A close look at the PDF generated">
+</h2>
+
+<p>Opening CBR file in Linux using Elance</p>
+
+<h2>
+<a id="-9" class="anchor" href="#-9" aria-hidden="true"><span class="octicon octicon-link"></span></a><img src="http://i.imgur.com/e8McsSF.png" alt="Open CBR files using Evince">
+</h2>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/AnimeshShaw/MangaScrapper">Mangascrapper</a> is maintained by <a href="https://github.com/AnimeshShaw">AnimeshShaw</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-55776877-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
+
