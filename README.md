@@ -6,7 +6,7 @@
 * [Screenshots](https://github.com/AnimeshShaw/MangaScrapper#screenshots)
 
 # MangaScrapper 
-===============
+
 
 
 	  __  __
@@ -22,7 +22,7 @@
 						  |_|   |_|
 			
 						  By : Psycho_Coder
-			  rC Developers @ rawCoders.com
+			  
 
 It is simple, easy, and fast command line tool to download manga's and save them in a directory and as well as save them in different formats like CBR/CBZ/CBT/PDF. [CBR](http://en.wikipedia.org/wiki/Comic_book_archive) is a well known comic book archive format used by many across the Globe. It is compatible with Python 2.7.x+ and Python 3.3.x+.
 
@@ -37,7 +37,7 @@ Fulfill the requirements by executing the following in bash shell.
 The *requirements.txt* file is present in the repo.
 
 # Help & Usage
-==============
+
 
 	usage: mangascrapper.py [-h] [-b BEGIN] [-e END] [-c CHAPTER] [-l LOCATION]
 	                [-lc] [-out OUTFORMAT]
@@ -69,7 +69,7 @@ The *requirements.txt* file is present in the repo.
 							
 
 # Example Usage
-===============
+
 
 #### To download complete Manga
 
@@ -148,7 +148,7 @@ __More Query Examples__
     python mangascrapper.py --outformat cbr --begin 1 --end 5 "Naruto"
 
 # Viewing Comic Book Archives (CBR/CBZ/CBT)
-==============
+
 
 #### Viewing in Linux
 
